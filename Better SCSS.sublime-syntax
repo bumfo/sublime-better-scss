@@ -7,7 +7,7 @@ file_extensions:
 scope: source.scss
 
 variables:
-  forward_ident_boundary: '\b(?!\-)'
+  forward_ident_boundary: '(?![a-zA-Z0-9_\-])'
 
   variable_token: '(\$)[a-zA-Z_][a-zA-Z0-9_\-]*{{forward_ident_boundary}}'
 
@@ -122,6 +122,16 @@ contexts:
     - scope: meta.ident_token.scss
       match: '{{ident_token}}'
     - include: scss-operators
+    - include: basic-parens
+
+  basic-parens:
+    - scope: punctuation.parens.begin.scss
+      match: '\('
+      push:
+        - include: basic-values
+        - scope: punctuation.parens.end.scss
+          match: '\)'
+          pop: true
 
   property-values:
     - include: basic-values
@@ -347,7 +357,7 @@ contexts:
         - scope: keyword.other.unit.scss
           match: '%'
         - scope: keyword.other.unit.scss
-          match: '(?:px|mm|q|cm|in|pt|pc|em|ex|cap|ch|ic|rem|lh|rlh|vh|vw|vi|vb|vmin|vmax|s|deg|rad|turn|dpi|fr){{forward_ident_boundary}}'
+          match: '(?:px|mm|q|cm|in|pt|pc|em|ex|cap|ch|ic|rem|lh|rlh|vh|vw|vi|vb|vmin|vmax|s|deg|rad|turn|dpi|fr)\b'
         - match: ''
           pop: true
 
@@ -356,6 +366,8 @@ contexts:
       match: '\('
       set:
         - include: simple-numerics
+        - scope: constant.numeric.scss
+          match: '(\d+|\-)?n\+\d+'
         - scope: support.constant.nth.scss
           match: \b(?:even|odd){{forward_ident_boundary}}
         - scope: punctuation.pseudo-class-paren.end.scss
@@ -455,6 +467,7 @@ contexts:
   selectors:
     - match: '(?=&|(::){{pseudo_element_name}}|(:){{pseudo_class_name}}|(#){{id_name}}|(\.){{class_name}}|{{eltname}}|>|\[)'
       push: selector-then
+
 
   blocks:
     - scope: punctuation
