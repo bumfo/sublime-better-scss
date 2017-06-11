@@ -41,6 +41,7 @@ contexts:
 
   main:
     - include: variable-declars
+    - include: at-rules
     - include: selectors
     - include: blocks
 
@@ -56,7 +57,7 @@ contexts:
       set:
         - scope: punctuation.separator.arguments.scss
           match: ','
-        - include: property-values
+        - include: basic-values
         - scope: punctuation.section.arguments.end.scss
           match: '\)'
           pop: true
@@ -99,6 +100,7 @@ contexts:
           ease-in-out|ease-in|ease-out|ease|
           italic|small-caps|
           bold|
+          antialiased|grayscale|
           initial|unset|inherit|normal|none|auto
         ){{forward_ident_boundary}}
     - include: well-know-font-names
@@ -111,15 +113,20 @@ contexts:
     - scope: punctuation.separator.property-value.scss
       match: ','
 
-  property-values:
+  basic-values:
     - include: function-blocks
     - include: constants
     - include: well-known-values
     - include: quoted-strings
     - include: other-variables
-    - include: scss-operators
     - scope: meta.ident_token.scss
       match: '{{ident_token}}'
+    - include: scss-operators
+
+  property-values:
+    - include: basic-values
+    - scope: keyword.other.important.scss
+      match: '!\s*important{{forward_ident_boundary}}'
 
   property-value-context:
     - include: property-values
@@ -131,7 +138,7 @@ contexts:
     - include: quoted-strings
     - include: well-know-font-names
     - scope: string.unquoted.font-name.scss
-      match: '(?:[a-zA-Z][a-zA-Z0-9]*)(?:\s+[a-zA-Z][a-zA-Z0-9]*)*'
+      match: '(?:[a-zA-Z_][a-zA-Z0-9_\-]*)(?:\s+[a-zA-Z_][a-zA-Z0-9_\-]*)*{{forward_ident_boundary}}'
     - scope: punctuation.separator.property-values.scss
       match: ','
     - match: '(?=;|\}|\{)'
@@ -263,6 +270,8 @@ contexts:
   string-escapes:
     - scope: constant.character.escape.scss
       match: '\\[a-f0-9]{1,6}'
+    - scope: constant.character.escape.scss
+      match: '\\.'
     - scope: invalid.illegal.newline.scss
       match: '\n'
       pop: true
@@ -338,7 +347,7 @@ contexts:
         - scope: keyword.other.unit.scss
           match: '%'
         - scope: keyword.other.unit.scss
-          match: '(?:px|em|ex|rem|s)\b'
+          match: '(?:px|mm|q|cm|in|pt|pc|em|ex|cap|ch|ic|rem|lh|rlh|vh|vw|vi|vb|vmin|vmax|s|deg|rad|turn|dpi|fr){{forward_ident_boundary}}'
         - match: ''
           pop: true
 
@@ -347,6 +356,8 @@ contexts:
       match: '\('
       set:
         - include: simple-numerics
+        - scope: support.constant.nth.scss
+          match: \b(?:even|odd){{forward_ident_boundary}}
         - scope: punctuation.pseudo-class-paren.end.scss
           match: '\)'
           pop: true
@@ -377,27 +388,15 @@ contexts:
     - match: '(?=\S)'
       pop: true
 
-  selectors:
-    - scope: punctuation.separator.combinator.scss
-      match: ','
-
+  at-rules:
     - scope: keyword.control.at-rule.scss
       match: '(@){{id_name}}'
       captures:
         1: punctuation.definition.entity.scss
-    - scope: punctuation.separator.combinator.scss
-      match: '>'
-    - scope: punctuation.separator.combinator.scss
-      match: '\+'
-    - scope: punctuation.separator.combinator.scss
-      match: '~'
-    - scope: punctuation.definition.entity.scss
-      match: '\['
-      push: [end-bracket, bracket-content]
-    - scope: entity.other.pseudo-element.scss
-      match: '(::){{pseudo_element_name}}'
-      captures:
-        1: punctuation.definition.entity.scss
+
+  # begin-selector:
+
+  pseudo-classes:
     - scope: punctuation.definition.entity.scss
       match: '(:)(?={{pseudo_class_name}})'
       push:
@@ -415,6 +414,26 @@ contexts:
           pop: true
         - match: '{{pseudo_class_name}}'
           pop: true
+
+
+  selector-then:
+    - meta_scope: meta.selector.scss
+    - scope: punctuation.separator.combinator.scss
+      match: ','
+    - scope: punctuation.separator.combinator.scss
+      match: '\+'
+    - scope: punctuation.separator.combinator.scss
+      match: '~'
+    - scope: punctuation.definition.entity.scss
+      match: '\['
+      push: [end-bracket, bracket-content]
+    - scope: punctuation.separator.combinator.scss
+      match: '>'
+    - scope: entity.other.pseudo-element.scss
+      match: '(::){{pseudo_element_name}}'
+      captures:
+        1: punctuation.definition.entity.scss
+    - include: pseudo-classes
     - scope: entity.other.attribute-name.id.scss
       match: '(#){{id_name}}'
       captures:
@@ -424,13 +443,25 @@ contexts:
       captures:
         1: punctuation.definition.entity.scss
     - scope: entity.name.tag.scss
+      match: '&'
+    - scope: entity.name.tag.scss
       match: '{{eltname}}'
+    - match: '(?=\s+\{)'
+      pop: true
+    - match: '(?=\S)'
+      pop: true
+
+
+  selectors:
+    - match: '(?=&|(::){{pseudo_element_name}}|(:){{pseudo_class_name}}|(#){{id_name}}|(\.){{class_name}}|{{eltname}}|>|\[)'
+      push: selector-then
 
   blocks:
     - scope: punctuation
       match: '\{'
       push:
         - include: properties
+        - include: at-rules
         - include: selectors
         - include: blocks
         - scope: punctuation
