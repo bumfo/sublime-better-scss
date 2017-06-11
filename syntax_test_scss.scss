@@ -921,3 +921,17 @@
     font-family: droid serif;
 /*               ^^^^^^^^^^^ string.unquoted */
 }
+
+
+
+
+.scss {
+    font:focus, sans-serif;
+/*  ^^^^ support.type.property-name */
+
+    font:focus {
+/*  ^^^^^^^^^^ meta.selector */
+/*  ^^^^ entity.name.tag */
+
+    }
+}
