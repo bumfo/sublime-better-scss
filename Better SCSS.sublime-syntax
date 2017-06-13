@@ -46,7 +46,7 @@ contexts:
     - include: blocks
 
   other-variables:
-    - scope: variable.other.scss
+    - scope: variable.my-other.scss
       match: '{{variable_token}}'
       captures:
         1: punctuation.definition.variable
@@ -157,11 +157,15 @@ contexts:
 
   variable-declars:
     - scope: variable.scss
-      match: '{{variable_token}}(:) '
+      match: '{{variable_token}}(:)'
       captures:
         1: punctuation.definition.variable
         2: punctuation.separator.key-value.scss
       push: [property-terminator, property-value-context]
+    - scope: variable.scss
+      match: '{{variable_token}}'
+      captures:
+        1: punctuation.definition.variable
 
   well-know-property-name:
     - match: |-
