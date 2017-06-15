@@ -474,13 +474,13 @@ contexts:
 
 
   blocks:
-    - scope: punctuation
+    - scope: punctuation.section.begin.scss
       match: '\{'
       push:
         - include: properties
         - include: at-rules
         - include: selectors
         - include: blocks
-        - scope: punctuation
+        - scope: punctuation.section.end.scss
           match: '\}'
           pop: true
