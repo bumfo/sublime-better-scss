@@ -29,6 +29,9 @@ variables:
 
 contexts:
   prototype:
+    - include: comments
+
+  comments:
     - scope: comment.line.scss
       match: '(//).*$(?:\n)?'
     - scope: punctuation.definition.comment.scss
@@ -40,6 +43,7 @@ contexts:
           pop: true
 
   main:
+    - include: comments
     - include: variable-declars
     - include: at-rules
     - include: selectors
