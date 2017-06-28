@@ -235,7 +235,7 @@ contexts:
           | font-variant-east-asian|font-variant-numeric|font-variant-position
           | font-variant|font-size-adjust|font-size|font-language-override
           | font-display|font-synthesis|font|line-box-contain|text-justify
-          | text-decoration-color|text-decoration-style|text-decoration-line
+          | text-decoration-color|text-decoration-style|text-decoration-line|text-decoration-skip
           | text-decoration|text-underline-position|grid-template|rotate
           | scale|translate|grid-template-columns|grid-template-rows
           | scroll-behavior|grid-column-start|grid-column-end|grid-column-gap
