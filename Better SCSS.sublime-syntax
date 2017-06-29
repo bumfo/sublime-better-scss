@@ -448,6 +448,7 @@ contexts:
           | azimuth|pause-after|pause-before|pause|pitch-range|pitch|text-height
           | system|negative|prefix|suffix|range|pad|fallback|additive-symbols
           | symbols|speak-as|speak|grid-gap|grid-row-gap
+          | backdrop-filter
         ){{forward_ident_boundary}}
       scope: support.type.property-name.scss
       pop: true
