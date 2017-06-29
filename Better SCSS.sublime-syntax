@@ -409,10 +409,20 @@ contexts:
       pop: true
 
   at-rules:
+    - scope: keyword.control.at-rule.import.scss
+      match: '(@)(?:import)\b'
+      captures:
+        1: punctuation.definition.entity.scss
+      push: [property-terminator, at-rule-import-context]
     - scope: keyword.control.at-rule.scss
       match: '(@){{id_name}}'
       captures:
         1: punctuation.definition.entity.scss
+
+  at-rule-import-context:
+    - include: quoted-strings
+    - match: '(?=\S)'
+      pop: true
 
   # begin-selector:
 
