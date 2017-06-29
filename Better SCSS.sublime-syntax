@@ -50,7 +50,7 @@ contexts:
     - include: blocks
 
   other-variables:
-    - scope: variable.my-other.scss
+    - scope: variable.other.scss
       match: '{{variable_token}}'
       captures:
         1: punctuation.definition.variable
@@ -160,13 +160,28 @@ contexts:
 
 
   variable-declars:
-    - scope: variable.scss
+    - scope: variable.other.definition.scss
       match: '{{variable_token}}(:)'
       captures:
         1: punctuation.definition.variable
         2: punctuation.separator.key-value.scss
       push: [property-terminator, property-value-context]
-    - scope: variable.scss
+    - scope: variable.other.scss
+      match: '{{variable_token}}'
+      captures:
+        1: punctuation.definition.variable
+
+  parameter-declars:
+    - scope: variable.parameter.with-default.scss
+      match: '{{variable_token}}(:)'
+      captures:
+        1: punctuation.definition.variable
+        2: punctuation.separator.key-value.scss
+      push: 
+        - include: property-value-context
+        - match: '(?=\))'
+          pop: true
+    - scope: variable.parameter.scss
       match: '{{variable_token}}'
       captures:
         1: punctuation.definition.variable
@@ -409,11 +424,38 @@ contexts:
       pop: true
 
   at-rules:
+    - scope: keyword.control.at-rule.mixin.scss
+      match: '(@)(?:mixin)\b'
+      captures:
+        1: punctuation.definition.entity.scss
+      push: 
+        - scope: entity.name.function.mixin.scss
+          match: '{{function_name}}'
+          set:
+            - scope: punctuation.mixin-paren.begin.scss
+              match: '\('
+              set:
+                - scope: punctuation.separator.parameters.scss
+                  match: ','
+                - scope: punctuation.mixin-paren.end.scss
+                  match: '\)'
+                  pop: true
+                - include: parameter-declars
+            - match: '(?=\S)'
+              pop: true
+
+    - scope: keyword.control.at-rule.include.scss
+      match: '(@)(?:include)\b'
+      captures:
+        1: punctuation.definition.entity.scss
+      push: [property-terminator, at-rule-include-context]
+
     - scope: keyword.control.at-rule.import.scss
       match: '(@)(?:import)\b'
       captures:
         1: punctuation.definition.entity.scss
       push: [property-terminator, at-rule-import-context]
+
     - scope: keyword.control.at-rule.scss
       match: '(@){{id_name}}'
       captures:
@@ -423,6 +465,14 @@ contexts:
     - include: quoted-strings
     - match: '(?=\S)'
       pop: true
+
+  at-rule-include-context:
+    - scope: variable.function.include.scss
+      match: '{{function_name}}'
+      set:
+        - include: function-paren
+        - match: '(?=\S)'
+          pop: true
 
   # begin-selector:
 
